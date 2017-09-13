@@ -77,6 +77,8 @@ export const SelectPropTypes = {
   drodownPopupAlign: PropTypes.object,
   onDropdownVisibleChange: PropTypes.func,
   maxTagTextLength: PropTypes.number,
+  maxTagCount: PropTypes.number,
+  maxTagPlaceholder: PropTypes.any,
   showCheckedStrategy: PropTypes.oneOf([
     SHOW_ALL, SHOW_PARENT, SHOW_CHILD,
   ]),

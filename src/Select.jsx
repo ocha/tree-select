@@ -765,7 +765,7 @@ class Select extends Component {
   renderTopControlNode() {
     const { value } = this.state;
     const props = this.props;
-    const { choiceTransitionName, prefixCls, maxTagTextLength } = props;
+    const { choiceTransitionName, prefixCls, maxTagTextLength, maxTagCount, maxTagPlaceholder } = props;
     // single and not combobox, input is inside dropdown
     if (isSingleMode(props)) {
       let innerNode = (<span
@@ -789,8 +789,24 @@ class Select extends Component {
     }
 
     let selectedValueNodes = [];
+    let limitedCountValue = value;
+    let maxTagPlaceholderEl;
+    if (maxTagCount && value.length > maxTagCount) {
+      limitedCountValue = limitedCountValue.slice(0, maxTagCount);
+      const content = maxTagPlaceholder || `+ ${value.length - maxTagCount} ...`;
+      maxTagPlaceholderEl = (<li
+        style={UNSELECTABLE_STYLE}
+        {...UNSELECTABLE_ATTRIBUTE}
+        onMouseDown={preventDefaultEvent}
+        className={`${prefixCls}-selection__choice ${prefixCls}-selection__choice__disabled`}
+        key={'maxTagPlaceholder'}
+        title={content}
+      >
+        <div className={`${prefixCls}-selection__choice__content`}>{content}</div>
+      </li>);
+    }
     if (isMultipleOrTags(props)) {
-      selectedValueNodes = value.map((singleValue) => {
+      selectedValueNodes = limitedCountValue.map((singleValue) => {
         let content = singleValue.label;
         const title = content;
         if (maxTagTextLength && typeof content === 'string' && content.length > maxTagTextLength) {
@@ -813,6 +829,9 @@ class Select extends Component {
           </li>
         );
       });
+    }
+    if (maxTagPlaceholderEl) {
+      selectedValueNodes.push(maxTagPlaceholderEl);
     }
     selectedValueNodes.push(<li
       className={`${prefixCls}-search ${prefixCls}-search--inline`}
