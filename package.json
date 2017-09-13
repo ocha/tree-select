@@ -1,5 +1,5 @@
 {
-  "name": "rc-tree-select",
+  "name": "@igagnidz/rc-tree-select",
   "version": "1.10.7",
   "description": "tree-select ui component for react",
   "keywords": [
@@ -69,12 +69,12 @@
     "lint"
   ],
   "dependencies": {
+    "@igagnidz/rc-tree": "^1.7.4",
     "babel-runtime": "^6.23.0",
     "classnames": "^2.2.1",
     "object-assign": "^4.0.1",
     "prop-types": "^15.5.8",
     "rc-animate": "^2.0.2",
-    "rc-tree": "https://github.com/ocha/tree.git",
     "rc-trigger": "1.x",
     "rc-util": "^4.0.2"
   }

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classnames from 'classnames';
 import Trigger from 'rc-trigger';
-import Tree, { TreeNode } from 'rc-tree';
+import Tree, { TreeNode } from '@igagnidz/rc-tree';
 import { loopAllChildren, flatToHierarchy, getValuePropValue, labelCompatible } from './util';
 import toArray from 'rc-util/lib/Children/toArray';
 

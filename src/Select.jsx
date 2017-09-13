@@ -765,7 +765,13 @@ class Select extends Component {
   renderTopControlNode() {
     const { value } = this.state;
     const props = this.props;
-    const { choiceTransitionName, prefixCls, maxTagTextLength, maxTagCount, maxTagPlaceholder } = props;
+    const {
+      choiceTransitionName,
+      prefixCls,
+      maxTagTextLength,
+      maxTagCount,
+      maxTagPlaceholder,
+    } = props;
     // single and not combobox, input is inside dropdown
     if (isSingleMode(props)) {
       let innerNode = (<span
