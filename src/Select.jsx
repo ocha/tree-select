@@ -75,7 +75,6 @@ class Select extends Component {
     placeholder: '',
     searchPlaceholder: '',
     labelInValue: false,
-    inputValue: '',
     onClick: noop,
     onChange: noop,
     onSelect: noop,
@@ -115,6 +114,7 @@ class Select extends Component {
     //   inputValue = value.length ? String(value[0].value) : '';
     // }
     this.saveInputRef = saveRef.bind(this, 'inputInstance');
+    this.saveInputMirrorRef = saveRef.bind(this, 'inputMirrorInstance');
     this.state = {
       value,
       inputValue,
@@ -124,11 +124,13 @@ class Select extends Component {
   }
 
   componentDidMount() {
-    if (this.state.inputValue) {
+    if (isMultipleOrTags(this.props)) {
       const inputNode = this.getInputDOMNode();
-      if (inputNode && inputNode.value) {
+      if (inputNode.value) {
         inputNode.style.width = '';
-        inputNode.style.width = `${inputNode.scrollWidth}px`;
+        inputNode.style.width = `${this.inputMirrorInstance.clientWidth}px`;
+      } else {
+        inputNode.style.width = '';
       }
     }
   }
@@ -190,7 +192,7 @@ class Select extends Component {
       const inputNode = this.getInputDOMNode();
       if (inputNode.value) {
         inputNode.style.width = '';
-        inputNode.style.width = `${inputNode.scrollWidth}px`;
+        inputNode.style.width = `${this.inputMirrorInstance.clientWidth}px`;
       } else {
         inputNode.style.width = '';
       }
@@ -300,6 +302,7 @@ class Select extends Component {
     props.onSelect(event, item, info);
     const checkEvt = info.event === 'check';
     if (isMultipleOrTags(props)) {
+      this.clearSearchInput();
       if (checkEvt) {
         value = this.getCheckedNodes(info, props).map(n => {
           return {
@@ -356,11 +359,8 @@ class Select extends Component {
     this.removeSelected(getValuePropValue(info.node));
     if (!isMultipleOrTags(this.props)) {
       this.setOpenState(false);
-    }
-    if (this.props.inputValue === null) {
-      this.setState({
-        inputValue: '',
-      });
+    } else {
+      this.clearSearchInput();
     }
   }
 
@@ -429,31 +429,42 @@ class Select extends Component {
       placeholder = props.searchPlaceholder;
     }
     if (placeholder) {
-      return (<span
-        style={{ display: hidden ? 'none' : 'block' }}
-        onClick={this.onPlaceholderClick}
-        className={`${props.prefixCls}-search__field__placeholder`}
-      >
-        {placeholder}
-      </span>);
+      return (
+        <span
+          style={{ display: hidden ? 'none' : 'block' }}
+          onClick={this.onPlaceholderClick}
+          className={`${props.prefixCls}-search__field__placeholder`}
+        >
+          {placeholder}
+        </span>
+      );
     }
     return null;
   }
 
   getInputElement() {
-    const props = this.props;
-    return (<span className={`${props.prefixCls}-search__field__wrap`}>
-      <input
-        ref={this.saveInputRef}
-        onChange={this.onInputChange}
-        onKeyDown={this.onInputKeyDown}
-        value={this.state.inputValue}
-        disabled={props.disabled}
-        className={`${props.prefixCls}-search__field`}
-        role="textbox"
-      />
-      {isMultipleOrTags(props) ? null : this.getSearchPlaceholderElement(!!this.state.inputValue)}
-    </span>);
+    const { inputValue } = this.state;
+    const { prefixCls, disabled } = this.props;
+    return (
+      <span className={`${prefixCls}-search__field__wrap`}>
+        <input
+          ref={this.saveInputRef}
+          onChange={this.onInputChange}
+          onKeyDown={this.onInputKeyDown}
+          value={inputValue}
+          disabled={disabled}
+          className={`${prefixCls}-search__field`}
+          role="textbox"
+        />
+        <span
+          ref={this.saveInputMirrorRef}
+          className={`${prefixCls}-search__field__mirror`}
+        >
+          {inputValue}&nbsp;
+        </span>
+        {isMultipleOrTags(this.props) ? null : this.getSearchPlaceholderElement(!!inputValue)}
+      </span>
+    );
   }
 
   getInputDOMNode() {
@@ -603,6 +614,13 @@ class Select extends Component {
         }
       }
     });
+  }
+
+  clearSearchInput() {
+    this.getInputDOMNode().focus();
+    if (!('inputValue' in this.props)) {
+      this.setState({ inputValue: '' });
+    }
   }
 
   addLabelToValue(props, value_) {
